@@ -13,6 +13,9 @@ h1{
     background-color: rgb(113, 181, 249);
 }
 
+.lives{
+    border-radius: 50%;
+}
 .smile{
     font-size: xx-large;
     margin-bottom: 20px;
@@ -34,11 +37,13 @@ h1{
 }
 
 .closed{
+    opacity: 100%;
     background-color: gray;
     width: 40px;
     height: 40px;
     cursor: pointer;
     text-align: center
+    
 }
 
 .closed span{
@@ -69,4 +74,17 @@ h1{
 
 .timer{
     background-color: lightcoral;    
+}
+
+img{
+    width: 80px;
+    height: auto;
+}
+
+.scoreBoard{
+    font-size: larger;
+    font-family: fantasy;
+    background-color: lightpink;
+    margin: 20px;
+    border-radius: 20px;
 }

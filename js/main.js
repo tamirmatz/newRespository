@@ -1,6 +1,11 @@
 const MINE = '💣'
 const EMPTY = ' ';
 
+localStorage.setItem("easyBestScore", 1000);
+localStorage.setItem("mediumBestScore", 1000);
+localStorage.setItem("extremeBestScore", 1000);
+
+var gHintIsOn = false;
 var gBoard;
 var gLevel = {
     SIZE: 4,
@@ -10,10 +15,18 @@ var gGame = {
     isOn: false,
     shownCount: 0,
     markedCount: 0,
-    secsPassed: 0
+    secsPassed: 0,
+    lives: 0
 }
+var GAMER_HINT1 = '<img src="img/hint.png"/>';
+var GAMER_HINT2 = '<img src="img/hint.png"/>';
+var GAMER_HINT3 = '<img src="img/hint.png"/>';
+renderHints(GAMER_HINT1, GAMER_HINT2, GAMER_HINT3);
 
 var gTimer;
+
+//disable menu on rifht click
+window.addEventListener("contextmenu", e => e.preventDefault());
 
 function initGame() {
     var elSmile = document.querySelector('.smile')
@@ -21,27 +34,102 @@ function initGame() {
     gGame.shownCount = 0;
     gGame.secsPassed = 0;
     gGame.isOn = true;
+    gGame.lives = 3;
+    renderLIVES();
     clearInterval(gTimer)
+    renderTime()
     gBoard = buildBoard()
     renderBoard(gBoard);
+    GAMER_HINT1 = '<img src="img/hint.png"/>';
+    GAMER_HINT2 = '<img src="img/hint.png"/>';
+    GAMER_HINT3 = '<img src="img/hint.png"/>';
+    renderHints(GAMER_HINT1, GAMER_HINT2, GAMER_HINT3);
 }
 
-function start(){
+function renderHints(hint1, hint2, hint3) {
+    var elHint1 = document.querySelector('.hints-container');
+    elHint1.innerHTML = `<span onclick="onHint1click()" class="hint1">${hint1}</span>`;
+    var elHint2 = document.querySelector('.hints-container');
+    elHint2.innerHTML += `<span onclick="onHint2click()" class="hint2">${hint2}</span>`;
+    var elHint3 = document.querySelector('.hints-container');
+    elHint3.innerHTML += `<span onclick="onHint3click()" class="hint3">${hint3}</span>`;
+}
+
+function onHint1click() {
+    GAMER_HINT1 = `<img src="img/hintClicked.png"/>`
+    renderHints(GAMER_HINT1, GAMER_HINT2, GAMER_HINT3)
+    gHintIsOn = true;
+}
+
+function onHint2click() {
+    GAMER_HINT2 = `<img src="img/hintClicked.png"/>`
+    renderHints(GAMER_HINT1, GAMER_HINT2, GAMER_HINT3)
+    gHintIsOn = true;
+}
+
+function onHint3click() {
+    GAMER_HINT3 = `<img src="img/hintClicked.png"/>`
+    renderHints(GAMER_HINT1, GAMER_HINT2, GAMER_HINT3)
+    gHintIsOn = true;
+}
+
+function hint(board, rowIdx, colIdx) {
+    var elNegCell;
+    for (var i = rowIdx - 1; i <= rowIdx + 1; i++) {
+        if (i < 0 || i > board.length - 1) continue;
+        for (var j = colIdx - 1; j <= colIdx + 1; j++) {
+            if (j < 0 || j > board[0].length - 1) continue
+            // if (i === rowIdx && j === colIdx) continue
+            if (gBoard[i][j].isShown) continue
+            var classname = getClassName({ i: i, j: j });
+            elNegCell = document.querySelector(`.${classname}`);
+            elNegCell.classList.remove('closed')
+        }
+    }
+    setTimeout(closeAfterHint, 1000)
+    gHintIsOn = false;
+}
+
+function hintDisappear() {
+
+}
+
+function closeAfterHint(board, rowIdx, colIdx) {
+    var elNegCell;
+    console.log('hi')
+    for (var i = rowIdx - 1; i <= rowIdx + 1; i++) {
+        if (i < 0 || i > board.length - 1) continue;
+        for (var j = colIdx - 1; j <= colIdx + 1; j++) {
+            if (j < 0 || j > board[0].length - 1) continue
+            // if (i === rowIdx && j === colIdx) continue
+            if (gBoard[i][j].isShown) continue
+            if(gBoard[i][j].isMarked) console.log('dd')
+            var classname = getClassName({ i: i, j: j });
+            elNegCell = document.querySelector(`.${classname}`);
+            elNegCell.classList.add('closed')
+        }
+    }
+    renderBoard(gBoard)
+}
+
+function start() {
     gTimer = setInterval(updateTime, 1000)
 }
 
-function updateTime(){
+function updateTime() {
     gGame.secsPassed += 1;
     renderTime();
 }
 
-function renderTime(){
+function renderTime() {
     var elTime = document.querySelector('.timer')
     elTime.innerHTML = 'Seconds Passed: ' + gGame.secsPassed;
 }
+function renderLIVES() {
+    var elLives = document.querySelector('.lives')
+    elLives.innerHTML = `${gGame.lives} ❤️ LEFT`
+}
 
-//disable menu on rifht click
-window.addEventListener("contextmenu", e => e.preventDefault());
 
 function buildBoard() {
     var board = createMat(gLevel.SIZE, gLevel.SIZE)
@@ -108,8 +196,6 @@ function renderBoard(board) {
             }
             else strHTML += EMPTY;
 
-            if (currCell.isMarked) strHTML += MARKED;
-
             strHTML += '\t</td>\n';
         }
         strHTML += '</tr>\n';
@@ -122,21 +208,27 @@ function renderBoard(board) {
 
 
 function cellClicked(elCell, i, j) {
-    if(gGame.shownCount === 0) start()
-    if (gBoard[i][j].isShown) return
-    if (gBoard[i][j].isMarked) return
-    playClickSound()
-    if (gBoard[i][j].minesAroundCount > 0) {
-        gBoard[i][j].isShown = true;
-        elCell.classList.remove("closed")
-        gGame.shownCount++;
+    if (gHintIsOn) {
+        hint(gBoard, i, j)
     }
-    if (!gBoard[i][j].isMine && gBoard[i][j].minesAroundCount === 0) {
-        expandShown(gBoard, elCell, i, j)
+    else {
+        if (gGame.shownCount === 0 && !gBoard[i][j].isMine) {
+            start()
+        }
+        if (gBoard[i][j].isShown) return
+        if (gBoard[i][j].isMarked) return
+        playClickSound()
+        if (gBoard[i][j].minesAroundCount > 0 && !gBoard[i][j].isMine) {
+            gBoard[i][j].isShown = true;
+            elCell.classList.remove("closed")
+            gGame.shownCount++;
+        }
+        if (!gBoard[i][j].isMine && gBoard[i][j].minesAroundCount === 0) {
+            expandShown(gBoard, elCell, i, j)
+        }
+        if (gBoard[i][j].isMine) gameOver()
+        checkVictory()
     }
-    if (gBoard[i][j].isMine) gameOver()
-    console.log(gGame)
-    checkVictory()
 
 }
 
@@ -180,20 +272,51 @@ function checkVictory() {
         gGame.isOn = false;
         var elSmile = document.querySelector('.smile')
         elSmile.innerHTML = '😎';
-        console.log("you win")
         playWinSound()
         clearInterval(gTimer)
+        if (gLevel.SIZE === 4) {
+            if (localStorage.getItem("easyBestScore") > gGame.secsPassed) {
+                localStorage.setItem("easyBestScore", gGame.secsPassed)
+                var elHighScore = document.querySelector('.highscoreE');
+                elHighScore.innerHTML = 'Easy Best Score: ' + localStorage.getItem("easyBestScore") + ' seconds!';
+            }
+        } else if (gLevel.SIZE === 8) {
+            if (localStorage.getItem("mediumBestScore") > gGame.secsPassed) {
+                localStorage.setItem("mediumBestScore", gGame.secsPassed)
+                var elHighScoreM = document.querySelector('.highscoreM');
+                elHighScoreM.innerHTML = 'Medium Best Score: ' + localStorage.getItem("mediumBestScore") + ' seconds!';
+            } else {
+                if (localStorage.getItem("extremeBestScore") > gGame.secsPassed) {
+                    localStorage.setItem("extremeBestScore", gGame.secsPassed)
+                    var elHighScoreM = document.querySelector('.highscoreH');
+                    elHighScoreM.innerHTML = 'Extreme Best Score: ' + localStorage.getItem("extremeBestScore") + ' seconds!';
+                }
+            }
+        }
     }
 }
 
 function gameOver() {
-    revealAll(gBoard)
-    gGame.isOn = false;
-    console.log('you lose')
     var elSmile = document.querySelector('.smile')
-    elSmile.innerHTML = '😱';
-    playGameOverSound()
-    clearInterval(gTimer)
+    if (gGame.lives === 2) {
+        elSmile = document.querySelector('.smile')
+        elSmile.innerHTML = '😯';
+    }
+    if (gGame.lives === 1) {
+        revealAll(gBoard)
+        gGame.isOn = false;
+        elSmile = document.querySelector('.smile')
+        elSmile.innerHTML = '😱';
+        playGameOverSound()
+        clearInterval(gTimer)
+        gGame.lives--;
+        renderLIVES()
+    } else {
+        gGame.lives--;
+        console.log(gGame.lives)
+        renderLIVES()
+        playGameOverSound()
+    }
 }
 
 function revealAll(board) {
@@ -221,7 +344,7 @@ function expandShown(board, elCell, rowIdx, colIdx) {
             if (j < 0 || j > board[0].length - 1) continue
             if (i === rowIdx && j === colIdx) continue
             if (!gBoard[i][j].isMine) {
-                if(!board[i][j].isShown) gGame.shownCount++;
+                if (!board[i][j].isShown) gGame.shownCount++;
                 var classname = getClassName({ i: i, j: j })
                 board[i][j].isShown = true;
                 elNegCell = document.querySelector(`.${classname}`)
@@ -258,38 +381,49 @@ function getRandomEmptyLocation(board) {
     shuffle(empyCells);
     return empyCells;
 }
-function easy(){
+function easy() {
     gLevel.SIZE = 4;
     gLevel.MINES = 2;
     playClickSound();
     initGame()
 }
 
-function medium(){
+function medium() {
     gLevel.SIZE = 8;
     gLevel.MINES = 12;
     playClickSound();
     initGame()
 }
 
-function extreme(){
+function extreme() {
     gLevel.SIZE = 12;
     gLevel.MINES = 30;
     playClickSound();
     initGame()
 }
 
-function playClickSound(){
+function playClickSound() {
     var btnSfx = new Audio('sounds/button push sfx.mp3')
     btnSfx.play()
 }
 
-function playGameOverSound(){
+function playGameOverSound() {
     var gameOverSfx = new Audio('sounds/gameover.wav')
-   gameOverSfx.play()
+    gameOverSfx.play()
 }
 
-function playWinSound(){
+function playWinSound() {
     var winSfx = new Audio('sounds/win.wav')
-   winSfx.play()
+    winSfx.play()
+}
+
+function setMines(board) {
+    var randomEmptyLocations = getRandomEmptyLocation(board);
+    for (var i = 0; i < gLevel.MINES; i++) {
+        var currLocation = randomEmptyLocations.pop()
+        var randomI = currLocation.i;
+        var randomJ = currLocation.j;
+        board[randomI][randomJ].isMine = true;
+    }
+    renderBoard(board)
 }
