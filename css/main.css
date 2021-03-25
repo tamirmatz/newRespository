@@ -1,0 +1,72 @@
+.backround{
+    background-color: lightsalmon;
+}
+table{
+    margin: auto;
+}
+body{
+    text-align: center;
+}
+
+h1{
+    font-family: fantasy;
+    background-color: rgb(113, 181, 249);
+}
+
+.smile{
+    font-size: xx-large;
+    margin-bottom: 20px;
+    cursor: pointer;
+    border-radius: 40%;
+    background-color: wheat;
+}
+.smile:hover{
+    background-color: mediumaquamarine;
+}
+
+.cell {
+    background-color: rgb(113, 181, 249);
+    width: 40px;
+    height: 40px;
+    text-align: center;
+    border: solid black;
+    
+}
+
+.closed{
+    background-color: gray;
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+    text-align: center
+}
+
+.closed span{
+    visibility: hidden;
+}
+
+.marked{
+    background-color: red;
+} 
+
+.level{
+    margin-bottom: 20px;
+}
+
+.level button{
+    width: 120px;
+    height: 40px;
+    background-color: lightcoral;
+    border-radius: 10px;
+    cursor: pointer;
+    font-family: fantasy;
+    font-size: larger;
+}
+
+.level button:hover{
+    background-color: mediumaquamarine;
+}
+
+.timer{
+    background-color: lightcoral;    
+}
