@@ -86,12 +86,24 @@ function hint(board, rowIdx, colIdx) {
             elNegCell.classList.remove('closed')
         }
     }
-    setTimeout(closeAfterHint, 1000)
+    setTimeout(function() {
+        for (var i = rowIdx - 1; i <= rowIdx + 1; i++) {
+            if (i < 0 || i > board.length - 1) continue;
+            for (var j = colIdx - 1; j <= colIdx + 1; j++) {
+                if (j < 0 || j > board[0].length - 1) continue
+                // if (i === rowIdx && j === colIdx) continue
+                if (gBoard[i][j].isShown) continue
+                var classname = getClassName({ i: i, j: j });
+                elNegCell = document.querySelector(`.${classname}`);
+                elNegCell.classList.add('closed')
+            }
+        }
+    }, 1000)
     gHintIsOn = false;
 }
 
 function hintDisappear() {
-
+    
 }
 
 function closeAfterHint(board, rowIdx, colIdx) {
@@ -103,13 +115,27 @@ function closeAfterHint(board, rowIdx, colIdx) {
             if (j < 0 || j > board[0].length - 1) continue
             // if (i === rowIdx && j === colIdx) continue
             if (gBoard[i][j].isShown) continue
-            if(gBoard[i][j].isMarked) console.log('dd')
             var classname = getClassName({ i: i, j: j });
             elNegCell = document.querySelector(`.${classname}`);
             elNegCell.classList.add('closed')
         }
     }
-    renderBoard(gBoard)
+}
+
+function cellMarked(elCell, i, j) {
+    if (gBoard[i][j].isShown) return
+    if (gBoard[i][j].isMarked) {
+        elCell.classList.remove("marked")
+        gBoard[i][j].isMarked = false;
+        gGame.cellMarked = false
+        gGame.markedCount--;
+    } else {
+        gBoard[i][j].isMarked = true;
+        elCell.classList.add("marked")
+        gGame.cellMarked = true;
+        gGame.markedCount++;
+    }
+    checkVictory()
 }
 
 function start() {
@@ -233,21 +259,6 @@ function cellClicked(elCell, i, j) {
 }
 
 
-function cellMarked(elCell, i, j) {
-    if (gBoard[i][j].isShown) return
-    if (gBoard[i][j].isMarked) {
-        elCell.classList.remove("marked")
-        gBoard[i][j].isMarked = false;
-        gGame.cellMarked = false
-        gGame.markedCount--;
-    } else {
-        gBoard[i][j].isMarked = true;
-        elCell.classList.add("marked")
-        gGame.cellMarked = true;
-        gGame.markedCount++;
-    }
-    checkVictory()
-}
 
 function mouseDown(e, elCell, i, j) {
     e = e || window.event;
