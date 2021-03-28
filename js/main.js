@@ -1,11 +1,11 @@
 const MINE = '💣'
 const EMPTY = ' ';
 
-localStorage.setItem("easyBestScore", 1000);
-localStorage.setItem("mediumBestScore", 1000);
-localStorage.setItem("extremeBestScore", 1000);
+localStorage.setItem("easyBestScore", Infinity);
+localStorage.setItem("mediumBestScore", Infinity);
+localStorage.setItem("extremeBestScore", Infinity);
 
-var gHintIsOn = false;
+var gHintIsOn;
 var gSafeClicks;
 
 var gBoard;
@@ -39,6 +39,7 @@ function initGame() {
     gGame.secsPassed = 0;
     gGame.isOn = true;
     gGame.lives = 3;
+    gHintIsOn = false
     renderLIVES();
     clearInterval(gTimer)
     renderTime()
@@ -324,12 +325,13 @@ function checkVictory() {
                 localStorage.setItem("mediumBestScore", gGame.secsPassed)
                 var elHighScoreM = document.querySelector('.highscoreM');
                 elHighScoreM.innerHTML = 'Medium Best Score: ' + localStorage.getItem("mediumBestScore") + ' seconds!';
-            } else {
-                if (localStorage.getItem("extremeBestScore") > gGame.secsPassed) {
-                    localStorage.setItem("extremeBestScore", gGame.secsPassed)
-                    var elHighScoreM = document.querySelector('.highscoreH');
-                    elHighScoreM.innerHTML = 'Extreme Best Score: ' + localStorage.getItem("extremeBestScore") + ' seconds!';
-                }
+            }
+        } else {
+            if (localStorage.getItem("extremeBestScore") > gGame.secsPassed) {
+                localStorage.setItem("extremeBestScore", gGame.secsPassed)
+                var elHighScoreH = document.querySelector('.highscoreH');
+                elHighScoreH.innerHTML = 'Extreme Best Score: ' + localStorage.getItem("extremeBestScore") + ' seconds!';
+
             }
         }
     }
