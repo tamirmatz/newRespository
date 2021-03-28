@@ -1,5 +1,6 @@
 .backround{
     background-color: lightsalmon;
+    border: solid black;
 }
 table{
     margin: auto;
@@ -7,14 +8,16 @@ table{
 body{
     text-align: center;
 }
-
-h1{
+.headline{
     font-family: fantasy;
     background-color: rgb(113, 181, 249);
+    border-top: solid black;
+    border-bottom: solid black;
 }
 
 .lives{
-    border-radius: 50%;
+    background-color: lightsalmon;
+    font-family: fantasy;
 }
 .smile{
     font-size: xx-large;
@@ -27,13 +30,17 @@ h1{
     background-color: mediumaquamarine;
 }
 
+hr{
+    border-color: black;
+}
+
 .cell {
     background-color: rgb(113, 181, 249);
     width: 40px;
     height: 40px;
     text-align: center;
     border: solid black;
-    
+    transition: 0.5s;
 }
 
 .closed{
@@ -43,7 +50,6 @@ h1{
     height: 40px;
     cursor: pointer;
     text-align: center
-    
 }
 
 .closed span{
@@ -52,6 +58,7 @@ h1{
 
 .marked{
     background-color: red;
+    transition: 0.5s;
 } 
 
 .level{
@@ -66,14 +73,16 @@ h1{
     cursor: pointer;
     font-family: fantasy;
     font-size: larger;
+    border: solid black;
 }
 
 .level button:hover{
-    background-color: mediumaquamarine;
+    background-color: wheat;
 }
 
 .timer{
-    background-color: lightcoral;    
+    font-family: fantasy;
+    font-size: x-large;
 }
 
 img{
@@ -87,4 +96,41 @@ img{
     background-color: lightpink;
     margin: 20px;
     border-radius: 20px;
+    border: solid black;
+}
+
+.safeclicked{
+    background-color: yellow;
+    transition: 2s;
+}
+
+.safeClick{
+    font-family: fantasy;
+    background-color: turquoise;
+    border: solid white;
+    border-radius: 10px;
+    width: 150px;
+    height: 50px;
+    font-size: larger;
+    cursor: pointer;
+}
+
+.safeClick:hover{
+    background-color: wheat;
+}
+
+.hint1{
+    cursor: pointer;
+}
+
+.hint2{
+    cursor: pointer;
+}
+
+.hint3{
+    cursor: pointer;
+}
+
+h4{
+    font-family: fantasy;
 }

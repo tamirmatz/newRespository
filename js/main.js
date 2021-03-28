@@ -6,6 +6,8 @@ localStorage.setItem("mediumBestScore", 1000);
 localStorage.setItem("extremeBestScore", 1000);
 
 var gHintIsOn = false;
+var gSafeClicks;
+
 var gBoard;
 var gLevel = {
     SIZE: 4,
@@ -29,6 +31,8 @@ var gTimer;
 window.addEventListener("contextmenu", e => e.preventDefault());
 
 function initGame() {
+    gSafeClicks = 3;
+    renderSafeClicks();
     var elSmile = document.querySelector('.smile')
     elSmile.innerHTML = '🤠';
     gGame.shownCount = 0;
@@ -53,6 +57,30 @@ function renderHints(hint1, hint2, hint3) {
     elHint2.innerHTML += `<span onclick="onHint2click()" class="hint2">${hint2}</span>`;
     var elHint3 = document.querySelector('.hints-container');
     elHint3.innerHTML += `<span onclick="onHint3click()" class="hint3">${hint3}</span>`;
+}
+
+function renderSafeClicks() {
+    var elSafeClick = document.querySelector('.safeClick');
+    elSafeClick.innerHTML = `Safe Clicks: ${gSafeClicks}`
+}
+
+function markRandomEmptyCell() {
+    if (gSafeClicks > 0) {
+        var emptyCells = getRandomEmptyLocation(gBoard)
+        var currLocation = emptyCells.pop()
+        var randomI = currLocation.i;
+        var randomJ = currLocation.j;
+        var classname = getClassName({ i: randomI, j: randomJ });
+        var elCell = document.querySelector(`.${classname}`);
+        if (elCell.classList.contains('closed')) {
+            elCell.classList.add('safeclicked')
+            gSafeClicks--;
+            setTimeout(function () { elCell.classList.remove('safeclicked') }, 2000)
+            renderSafeClicks();
+        } else {
+            markRandomEmptyCell();
+        }
+    } else return null;
 }
 
 function onHint1click() {
@@ -86,7 +114,7 @@ function hint(board, rowIdx, colIdx) {
             elNegCell.classList.remove('closed')
         }
     }
-    setTimeout(function() {
+    setTimeout(function () {
         for (var i = rowIdx - 1; i <= rowIdx + 1; i++) {
             if (i < 0 || i > board.length - 1) continue;
             for (var j = colIdx - 1; j <= colIdx + 1; j++) {
@@ -103,7 +131,7 @@ function hint(board, rowIdx, colIdx) {
 }
 
 function hintDisappear() {
-    
+
 }
 
 function closeAfterHint(board, rowIdx, colIdx) {
@@ -392,6 +420,8 @@ function getRandomEmptyLocation(board) {
     shuffle(empyCells);
     return empyCells;
 }
+
+
 function easy() {
     gLevel.SIZE = 4;
     gLevel.MINES = 2;

@@ -11,17 +11,19 @@
 
 <body onload="initGame()">
     <div class="backround">
-        <h1>Mine Sweeper</h1>
+        <h1 class="headline">✨Mine Sweeper✨</h1>
         <div class="level">
             <button onclick="easy()">Easy</button>
             <button onclick="medium()">Medium</button>
             <button onclick="extreme()">Extreme</button>
         </div>
+        <h1 class="timer">Seconds Passed:</h1>
         <button onclick="initGame()" class="smile">🤠</button>
         <table>
             <tbody class="board"></tbody>
         </table>
         <div class="hints-container"></div>
+        <button class="safeClick" onclick="markRandomEmptyCell()">Safe Click: 3 </button>
         <h1 class="lives">3 ❤️ LEFT</h1>
         <div class="scoreBoard">
             <div class="highscoreE">Easy Best Score:</div>
@@ -30,7 +32,7 @@
             <hr>
             <div class="highscoreH">Extreme Best Score:</div>
         </div>
-        <h1 class="timer">Seconds Passed:</h1>
+        <h4>By Tamr Matz™️</h4>
     </div>
     <script src="js/util.js"></script>
     <script src="js/main.js"></script>
